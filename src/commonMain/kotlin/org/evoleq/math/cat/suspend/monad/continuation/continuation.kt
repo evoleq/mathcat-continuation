@@ -16,17 +16,20 @@
 package org.evoleq.math.cat.suspend.monad.continuation
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import org.evoleq.math.cat.marker.MathCatDsl
 import org.evoleq.math.cat.suspend.morphism.ScopedSuspended
 import org.evoleq.math.cat.suspend.morphism.by
 
 interface Continuation<R, A> : ScopedSuspended<suspend CoroutineScope.(A)->R, R> {
-
+    @MathCatDsl
     suspend infix fun <B> map(f: suspend CoroutineScope.(A)->B): Continuation<R, B> = Continuation<R, B> {
         h: suspend CoroutineScope.(B)->R ->  by(this@Continuation)(by(ScopedSuspended(h) o ScopedSuspended(f)))
     }
-    
+    @MathCatDsl
     suspend fun <B> bind(arrow: suspend CoroutineScope.(A)->Continuation<R, B>): Continuation<R, B> = (this map arrow).multiply()
+    @MathCatDsl
+    suspend infix fun run(h: suspend CoroutineScope.(A)->R): R = coroutineScope { by(this@Continuation)(h) }
 }
 
 
@@ -38,7 +41,8 @@ fun <R, A> Continuation(arrow: suspend CoroutineScope.(suspend CoroutineScope.(A
 }
 
 @MathCatDsl
-fun <R, A> eta(a: A): Continuation<R, A> = Continuation<R, A> {
+@Suppress("FunctionName")
+fun <R, A> ReturnContinuation(a: A): Continuation<R, A> = Continuation<R, A> {
     f -> f(a)
 }
 
