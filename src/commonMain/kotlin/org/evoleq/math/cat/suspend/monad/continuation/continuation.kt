@@ -60,6 +60,12 @@ fun <R, A, B> KlContinuation(arrow: suspend CoroutineScope.(A)->Continuation<R, 
     override val morphism: suspend CoroutineScope.(A) -> Continuation<R, B> = arrow
 }
 
+@MathCatDsl
+@Suppress("FunctionName")
+fun <R, A> KlReturnContinuation(): KlContinuation<R, A, A> = KlContinuation<R, A, A> {
+    a -> ReturnContinuation(a)
+}
+
 suspend fun <R, A, B, C> KlContinuation<R, A, B>.times(other: KlContinuation<R, B, C>): KlContinuation<R, A, C> = KlContinuation {
     a -> (by(this@times)(a) map by(other)).multiply()
 }
