@@ -1,10 +1,5 @@
 # Mathcat Continuation
 
-<!--#
-NOUN=mother
-ATTRIBUTION=Mark Wahlberg
-$-->
-{{ NOUN }}
 
 
 |Platform|||
